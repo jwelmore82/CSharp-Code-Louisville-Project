@@ -10,6 +10,16 @@ namespace RotatingChoresData
     {
         public int ChoreId { get; set; }
 
-        public string ChoreDescription 
+        public string Name { get; set; }
+
+        public int Difficulty { get; set; }
+
+        public string Description { get; set; }
+
+        public virtual ICollection<string> Steps { get; set; }
+
+        public DateTime? LastCompleted { get; set; }
+
+        public virtual ChoreDoer LastCompletedBy { get; set; }
     }
 }
