@@ -1,0 +1,58 @@
+﻿@model RotatingChores.Models.ChoreModel
+
+@{
+    ViewBag.Title = "Chore";
+}
+
+<h2>Chore</h2>
+
+<div>
+    <h4>Chore</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Difficulty)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Difficulty)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastCompleted)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastCompleted)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastCompletedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastCompletedBy)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ChoreId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

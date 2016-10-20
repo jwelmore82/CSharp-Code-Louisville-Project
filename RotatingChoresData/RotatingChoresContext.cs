@@ -21,6 +21,8 @@ namespace RotatingChoresData
         public virtual DbSet<ChoreDoer> ChoreDoers { get; set; }
 
         public virtual DbSet<Group> Groups { get; set; }
+
+        
     }
 
 

@@ -11,17 +11,38 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using RotatingChores.Models;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using System.Web.Script.Serialization;
+using System.Net;
+using System.Configuration;
+using System.Diagnostics;
+using System.Net.Mail;
 
 namespace RotatingChores
 {
     public class EmailService : IIdentityMessageService
     {
-        public Task SendAsync(IdentityMessage message)
+        public async Task SendAsync(IdentityMessage message)
         {
+            dynamic sg = new SendGridAPIClient("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");
+
+            Email from = new Email("system@RotatingChores");
+            string subject = message.Subject;
+            Email to = new Email(message.Destination);
+            Content content = new Content("text/plain", message.Body);
+            Mail mail = new Mail(from, subject, to, content);
+            
+
+            dynamic response = await sg.client.mail.send.post(requestBody: mail.Get());
+
+
             // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            
         }
     }
+
+
 
     public class SmsService : IIdentityMessageService
     {

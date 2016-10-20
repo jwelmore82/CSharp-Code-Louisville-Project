@@ -10,8 +10,8 @@ namespace RotatingChoresData
     {
         public int GroupId { get; set; }
 
-        public virtual ICollection<ChoreDoer> Members { get; set; }
+        public ICollection<ChoreDoer> Members { get; set; }
 
-        public virtual ICollection<Chore> Chores { get; set; }
+        public ICollection<Chore> Chores { get; set; }
     }
 }

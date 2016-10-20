@@ -8,7 +8,7 @@ namespace RotatingChoresData
 {
     public class ChoreDoer
     {
-        public int ChoreDoerID { get; set; }
+        public int ChoreDoerId { get; set; }
 
         public string FirstName { get; set; }
 
@@ -19,5 +19,7 @@ namespace RotatingChoresData
         public int MaxDifficulty { get; set; }
 
         public int GroupId { get; set; }
+
+        public ICollection<Chore> Chores { get; set; }
     }
 }

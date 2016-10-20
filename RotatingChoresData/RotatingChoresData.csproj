@@ -54,6 +54,7 @@
     <Compile Include="Chore.cs" />
     <Compile Include="ChoreDoer.cs" />
     <Compile Include="Group.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RotatingChoresContext.cs" />
   </ItemGroup>
