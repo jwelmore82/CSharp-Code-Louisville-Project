@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chore.cs" />
+    <Compile Include="ChoreBase.cs" />
     <Compile Include="ChoreDoer.cs" />
     <Compile Include="Group.cs" />
     <Compile Include="Migrations\Configuration.cs" />

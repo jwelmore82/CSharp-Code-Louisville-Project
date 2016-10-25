@@ -1,10 +1,14 @@
-﻿using RotatingChores.Models;
+﻿using Microsoft.AspNet.Identity;
+using RotatingChores.Models;
 using RotatingChoresData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity.Owin;
+using System.Security.Principal;
+using RotatingChores.Extensions;
 
 namespace RotatingChores.Controllers
 {
@@ -50,14 +54,16 @@ namespace RotatingChores.Controllers
         public ActionResult Add(ChoreModel newChore)
         {
             var addingChore = newChore.ConvertToChore();
-            addingChore.GroupId = 1;
+
+            addingChore.GroupId = User.Identity.GetGroupId();
 
             using (var context = new RotatingChoresContext())
             {
+
                 context.Chores.Add(addingChore);
-            } 
-            
-            
+                context.SaveChanges();
+            }
+
             return RedirectToAction("Index");
         }
     }

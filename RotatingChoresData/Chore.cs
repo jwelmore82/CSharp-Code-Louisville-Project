@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RotatingChoresData
 {
-    public class Chore
+    public class Chore : ChoreBase
     {
         public int ChoreId { get; set; }
 
@@ -17,7 +17,7 @@ namespace RotatingChoresData
 
         public int GroupId { get; set; }
 
-        public int Difficulty { get; set; }
+        public DifficultyLevel Difficulty { get; set; }
 
         public string Description { get; set; }
 
@@ -25,11 +25,6 @@ namespace RotatingChoresData
         public ChoreDoer AssignedTo { get; set; }
 
         public DateTime? LastCompleted { get; set; }
-
-        //[ForeignKey("LastCompletedById")]
-        //public virtual ChoreDoer LastCompletedByDoer { get; set; }
-
-        //public int? LastCompletedById { get; set; }
 
         public ChoreDoer LastCompletedBy { get; set; }
 

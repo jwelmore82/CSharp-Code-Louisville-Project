@@ -6,14 +6,43 @@ using System.Web.Mvc;
 using RotatingChoresData;
 using RotatingChores.Models;
 using System.Data.Entity;
+using System.Web.Security;
+
+using Owin;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using System.Security.Claims;
 
 namespace RotatingChores.Controllers
 {
     [RequireHttps]
     public class HomeController : Controller
     {
+        private ApplicationUserManager _userManager;
         public ActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                var id = User.Identity.GetUserId();
+                
+                using (var context = new RotatingChoresContext())
+                using (_userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>())
+                {
+                    string email = _userManager.GetEmail(id);
+                    var choreDoer = context.ChoreDoers.FirstOrDefault(c => c.Email == email);
+                    if (choreDoer == null)
+                    {
+                        ViewBag.Message = "You have not set up your Chore Doer Profile";
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Looks like you're in the system!";
+                    }
+                }
+
+                return View();
+            }
+            ViewBag.Message = "Sign In to start keeping track of chores!";
             return View();
         }
 
@@ -21,38 +50,7 @@ namespace RotatingChores.Controllers
         {
             ViewBag.Message = "Your application description page.";
 
-            //var rCContext = new RotatingChoresContext();
-
-            //var group = new Group();
-
-            //var litter = new Chore()
-            //{
-            //    Name = "Litter Box",
-            //    Description = "Clean the kitty litter box.",
-            //    Difficulty = 2,
-            //    GroupId = group.GroupId
-
-            //};
-
-            //var choreDoer = new ChoreDoer()
-            //{
-            //    FirstName = "Josh",
-            //    LastName = "Elmore",
-            //    Email = "jwelmore82@gmail.com",
-            //    GroupId = group.GroupId,
-            //    MaxDifficulty = 5,
-            //    Chores = new List<Chore>()
-                
-               
-            //};
-
-           
-            //choreDoer.Chores.Add(litter);
-
-            //rCContext.Groups.Add(group);
-            //rCContext.Chores.Add(litter);
-            //rCContext.ChoreDoers.Add(choreDoer);
-            //rCContext.SaveChanges();
+            
 
             return View();
         }

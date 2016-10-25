@@ -10,6 +10,8 @@ namespace RotatingChoresData
         public RotatingChoresContext()
             : base("name=RotatingChoresContext")
         {
+            //TODO Delete this when database finished.
+            Database.SetInitializer<RotatingChoresContext>(new DropCreateDatabaseIfModelChanges<RotatingChoresContext>());
         }
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 

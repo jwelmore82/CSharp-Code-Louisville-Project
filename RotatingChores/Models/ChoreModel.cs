@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using RotatingChoresData;
 using System.ComponentModel.DataAnnotations;
+using static RotatingChoresData.ChoreBase;
 
 namespace RotatingChores.Models
 {
@@ -14,7 +15,7 @@ namespace RotatingChores.Models
 
         public string Name { get; set; }
 
-        public int Difficulty { get; set; }
+        public DifficultyLevel Difficulty { get; set; }
 
         public string Description { get; set; }
 

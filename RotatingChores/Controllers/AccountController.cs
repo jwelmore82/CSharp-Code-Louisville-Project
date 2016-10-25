@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using RotatingChores.Models;
+using RotatingChoresData;
 
 namespace RotatingChores.Controllers
 {
@@ -164,7 +165,31 @@ namespace RotatingChores.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email};
+                
+                //Check the existing ChoreDoers for the email from the user.  
+                using (var context = new RotatingChoresContext())
+                {
+                    var check = context.ChoreDoers.SingleOrDefault(d => d.Email == user.Email);
+                    if (check == null)
+                    {
+                        //If no ChoreDoer found by user's email, create new group -
+                        var newGroup = context.Groups.Create();
+                        //Add to the databse and save for auto increment value                       
+                        context.Groups.Add(newGroup);
+                        context.SaveChanges();
+                        //And set to new GroupId
+                        user.GroupId = newGroup.GroupId;
+
+
+                    }
+                    else
+                    {
+                        //If user email is found, set user GroupId to matching ChoreDoer GroupId.
+                        user.GroupId = check.GroupId;
+                    }
+                       
+                }
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
