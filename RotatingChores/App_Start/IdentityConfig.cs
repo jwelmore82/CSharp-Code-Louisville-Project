@@ -30,7 +30,7 @@ namespace RotatingChores
             Email from = new Email("system@RotatingChores");
             string subject = message.Subject;
             Email to = new Email(message.Destination);
-            Content content = new Content("text/plain", message.Body);
+            Content content = new Content("text/html", message.Body);
             Mail mail = new Mail(from, subject, to, content);
             
 

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RotatingChoresData;
-using System.ComponentModel.DataAnnotations;
-using static RotatingChoresData.ChoreBase;
+using RotatingChores.Extensions;
 
 namespace RotatingChores.Models
 {
@@ -15,15 +14,15 @@ namespace RotatingChores.Models
 
         public string Name { get; set; }
 
-        public DifficultyLevel Difficulty { get; set; }
+        public ChoreBase.DifficultyLevel? Difficulty { get; set; }
 
         public string Description { get; set; }
 
         public DateTime? LastCompleted { get; set; }
 
-        public ChoreDoer LastCompletedBy { get; set; }
+        public int? LastCompletedById { get; set; }
 
-        public ChoreDoer AssignedTo { get; set; }
+        public int AssignedToId { get; set; }
 
         public static ChoreModel ConvertFromChore(Chore chore)
         {
@@ -37,29 +36,52 @@ namespace RotatingChores.Models
             if (chore.LastCompleted != null)
             {
                 model.LastCompleted = chore.LastCompleted;
-                model.LastCompletedBy = chore.LastCompletedBy;
+                model.LastCompletedById = chore.LastCompletedBy.ChoreDoerId;
             }
 
-            model.AssignedTo = chore.AssignedTo;
+            model.AssignedToId = chore.AssignedTo.ChoreDoerId;
             
 
             return model;
         }
 
-        public Chore ConvertToChore()
+        public Chore ConvertToChore(RotatingChoresContext context)
         {
-            var chore = new Chore();
-            this.ChoreId = chore.ChoreId;
-            this.Description = chore.Description;
-            this.Name = chore.Name;
-            this.Difficulty = chore.Difficulty;
-            this.AssignedTo = chore.AssignedTo;
-            this.LastCompleted = chore.LastCompleted;
-            this.LastCompletedBy = chore.LastCompletedBy;
+            Chore chore;
+            
+            
+                
+            if (ChoreId != null)
+            {
+                chore = context.Chores.SingleOrDefault(c => c.ChoreId == ChoreId.Value);
+                return chore;
+            }
+            else
+            {
+                chore = new Chore();
+                    
+            }
+                
+            if (LastCompletedById != null)
+            {
+                chore.LastCompleted = LastCompleted;
+                ChoreDoer last = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == LastCompletedById);
+                chore.LastCompletedBy = last;
+            }
+            ChoreDoer assignedTo = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == AssignedToId); 
+            chore.AssignedTo = assignedTo;
+            
+            
+            chore.Description = Description;
+            chore.Name = Name;
+            chore.Difficulty =(ChoreBase.DifficultyLevel) Difficulty; 
+
+
+            
+            
     
             return chore;
         }
-
     }
 
 }

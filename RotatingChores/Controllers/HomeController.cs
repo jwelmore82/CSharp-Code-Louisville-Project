@@ -18,7 +18,6 @@ namespace RotatingChores.Controllers
     [RequireHttps]
     public class HomeController : Controller
     {
-        private ApplicationUserManager _userManager;
         public ActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -26,9 +25,9 @@ namespace RotatingChores.Controllers
                 var id = User.Identity.GetUserId();
                 
                 using (var context = new RotatingChoresContext())
-                using (_userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>())
+                using (var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>())
                 {
-                    string email = _userManager.GetEmail(id);
+                    string email = userManager.GetEmail(id);
                     var choreDoer = context.ChoreDoers.FirstOrDefault(c => c.Email == email);
                     if (choreDoer == null)
                     {

@@ -46,25 +46,43 @@ namespace RotatingChores.Controllers
 
         public ActionResult Add()
         {
-            var chore = new ChoreModel();
-            return View(chore);
+            SetGroupMemberEnum();
+            return View();
         }
 
         [HttpPost]
         public ActionResult Add(ChoreModel newChore)
         {
-            var addingChore = newChore.ConvertToChore();
-
-            addingChore.GroupId = User.Identity.GetGroupId();
-
+            
             using (var context = new RotatingChoresContext())
             {
+                var addingChore = newChore.ConvertToChore(context);
 
+                addingChore.GroupId = User.Identity.GetGroupId();
                 context.Chores.Add(addingChore);
                 context.SaveChanges();
             }
 
             return RedirectToAction("Index");
+        }
+
+        private void SetGroupMemberEnum()
+        {
+            var returnList = new List<ChoreDoer>();
+            using (var context = new RotatingChoresContext())
+            {
+                var userGroupId = User.Identity.GetGroupId();
+                Group userGroup = context.Groups.First(g => g.GroupId == userGroupId);
+                if (userGroup.Members.Count() > 0)
+                {
+                    foreach (var member in userGroup.Members)
+                    {
+                        returnList.Add(member);
+                    }
+                }
+            }
+            var selectList = new SelectList(returnList, "ChoreDoerId", "Name", "Assign To");
+            ViewBag.GroupMembers = selectList;
         }
     }
 }

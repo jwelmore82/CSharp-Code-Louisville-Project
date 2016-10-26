@@ -12,6 +12,8 @@ namespace RotatingChoresData
         {
             //TODO Delete this when database finished.
             Database.SetInitializer<RotatingChoresContext>(new DropCreateDatabaseIfModelChanges<RotatingChoresContext>());
+
+            Configuration.LazyLoadingEnabled = true;
         }
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 
