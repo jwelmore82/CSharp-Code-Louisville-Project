@@ -165,7 +165,7 @@ namespace RotatingChores.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email};
+                var user = new ApplicationUser { UserName = model.Name, Email = model.Email};
                 
                 //Check the existing ChoreDoers for the email from the user.  
                 using (var context = new RotatingChoresContext())

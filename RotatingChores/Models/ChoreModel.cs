@@ -49,25 +49,25 @@ namespace RotatingChores.Models
         {
             Chore chore;
             
-            
+            //ChoreId on ChoreModel is of type int?, not set until value recieved from database
                 
             if (ChoreId != null)
             {
                 chore = context.Chores.SingleOrDefault(c => c.ChoreId == ChoreId.Value);
                 return chore;
             }
-            else
-            {
-                chore = new Chore();
+           
+            //If no reference to a database object, create a new Chore
+            chore = new Chore();
                     
-            }
-                
-            if (LastCompletedById != null)
-            {
-                chore.LastCompleted = LastCompleted;
-                ChoreDoer last = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == LastCompletedById);
-                chore.LastCompletedBy = last;
-            }
+            
+            //TODO Move this block of code to an Edit controller, it will never get hit here.    
+            //if (LastCompletedById != null)
+            //{
+            //    chore.LastCompleted = LastCompleted;
+            //    ChoreDoer last = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == LastCompletedById);
+            //    chore.LastCompletedBy = last;
+            //}
             ChoreDoer assignedTo = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == AssignedToId); 
             chore.AssignedTo = assignedTo;
             

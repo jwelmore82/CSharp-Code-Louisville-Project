@@ -57,13 +57,20 @@ namespace RotatingChores.Controllers
             using (var context = new RotatingChoresContext())
             {
                 var addingChore = newChore.ConvertToChore(context);
-
-                addingChore.GroupId = User.Identity.GetGroupId();
-                context.Chores.Add(addingChore);
-                context.SaveChanges();
+                                
+                ValidateAssignTo(addingChore);
+                if (ModelState.IsValid)
+                {
+                    addingChore.GroupId = User.Identity.GetGroupId();
+                    context.Chores.Add(addingChore);
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                SetGroupMemberEnum();
+                return View(newChore);
             }
 
-            return RedirectToAction("Index");
+            
         }
 
         private void SetGroupMemberEnum()
@@ -83,6 +90,15 @@ namespace RotatingChores.Controllers
             }
             var selectList = new SelectList(returnList, "ChoreDoerId", "Name", "Assign To");
             ViewBag.GroupMembers = selectList;
+        }
+
+        //Prevents a Chore from being assigned to a ChoreDoer with a lower MaxDifficulty
+        private void ValidateAssignTo(Chore chore)
+        {
+            if (chore.Difficulty > chore.AssignedTo.MaxDifficulty)
+            {
+                ModelState.AddModelError("Difficulty", "This chore is too difficult for the selected user. Change Difficulty or raise MaxDifficulty for the user.");
+            }
         }
     }
 }
