@@ -9,9 +9,11 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using System.Security.Principal;
 using RotatingChores.Extensions;
+using System.Net;
 
 namespace RotatingChores.Controllers
 {
+    [Authorize]
     public class ChoreController : Controller
     {
         // GET: Chore
@@ -24,29 +26,52 @@ namespace RotatingChores.Controllers
         {
             if (id == null)
             {
-                return HttpNotFound();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var choreContext = new RotatingChoresContext();
-            var chore = ChoreModel.ConvertFromChore(choreContext.Chores.Single(c => c.ChoreId == id));
-            return View(chore);
+            using (var choreContext = new RotatingChoresContext())
+            {
+                var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.Single(c => c.ChoreId == id));
+
+                return View(choreModel);
+            }
         }
 
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
-                return HttpNotFound();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var choreContext = new RotatingChoresContext();
-            var chore = ChoreModel.ConvertFromChore(choreContext.Chores.Single(c => c.ChoreId == id));
-            return View(chore);
+            var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.Single(c => c.ChoreId == id));
+            SetGroupMemberSelectList();
+            return View(choreModel);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(ChoreModel model)
+        {
+            using (var context = new RotatingChoresContext())
+            {
+                var chore = model.GetRepresentedChore(context);
+                
+                model.UpdateChore(context, chore);                
+                ValidateAssignTo(chore);
+                if (ModelState.IsValid)
+                {
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            SetGroupMemberSelectList();
+            return View(model);
         }
 
         public ActionResult Add()
         {
-            SetGroupMemberEnum();
+            SetGroupMemberSelectList();
             return View();
         }
 
@@ -56,7 +81,8 @@ namespace RotatingChores.Controllers
             
             using (var context = new RotatingChoresContext())
             {
-                var addingChore = newChore.ConvertToChore(context);
+                var addingChore = context.Chores.Create();
+                newChore.UpdateChore(context, addingChore);
                                 
                 ValidateAssignTo(addingChore);
                 if (ModelState.IsValid)
@@ -66,16 +92,16 @@ namespace RotatingChores.Controllers
                     context.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                SetGroupMemberEnum();
+                SetGroupMemberSelectList();
                 return View(newChore);
             }
 
             
         }
 
-        private void SetGroupMemberEnum()
+        private void SetGroupMemberSelectList()
         {
-            var returnList = new List<ChoreDoer>();
+            var returnList = new List<ChoreDoerModel>();
             using (var context = new RotatingChoresContext())
             {
                 var userGroupId = User.Identity.GetGroupId();
@@ -84,11 +110,11 @@ namespace RotatingChores.Controllers
                 {
                     foreach (var member in userGroup.Members)
                     {
-                        returnList.Add(member);
+                        returnList.Add(ChoreDoerModel.ConvertFromDoer(member));
                     }
                 }
             }
-            var selectList = new SelectList(returnList, "ChoreDoerId", "Name", "Assign To");
+            var selectList = new SelectList(returnList, "ChoreDoerId", "Name", new SelectListItem{Text = "Select group member" });
             ViewBag.GroupMembers = selectList;
         }
 

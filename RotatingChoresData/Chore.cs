@@ -22,11 +22,11 @@ namespace RotatingChoresData
         public string Description { get; set; }
 
        
-        public ChoreDoer AssignedTo { get; set; }
+        public virtual ChoreDoer AssignedTo { get; set; }
 
         public DateTime? LastCompleted { get; set; }
 
-        public ChoreDoer LastCompletedBy { get; set; }
+        public virtual ChoreDoer LastCompletedBy { get; set; }
 
         
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using RotatingChoresData;
 using RotatingChores.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace RotatingChores.Models
 {
@@ -17,12 +18,19 @@ namespace RotatingChores.Models
         public ChoreBase.DifficultyLevel? Difficulty { get; set; }
 
         public string Description { get; set; }
-
+        [Display(Name = "Last Completed On")]
         public DateTime? LastCompleted { get; set; }
 
+        [Display(Name = "Last Completed By")]
         public int? LastCompletedById { get; set; }
-
+        [Display(Name = "Last Completed By")]
+        public string LastCompletedBy { get; set;
+        }
+        [Display(Name = "Assigned To")]
         public int AssignedToId { get; set; }
+
+        [Display(Name = "Assigned To")]
+        public string AssignedTo { get; set; }
 
         public static ChoreModel ConvertFromChore(Chore chore)
         {
@@ -37,49 +45,35 @@ namespace RotatingChores.Models
             {
                 model.LastCompleted = chore.LastCompleted;
                 model.LastCompletedById = chore.LastCompletedBy.ChoreDoerId;
+                model.LastCompletedBy = chore.LastCompletedBy.Name;
             }
-
-            model.AssignedToId = chore.AssignedTo.ChoreDoerId;
-            
+            ChoreDoer doer = chore.AssignedTo;
+            model.AssignedToId = doer.ChoreDoerId;
+            model.AssignedTo = doer.Name;
 
             return model;
         }
 
-        public Chore ConvertToChore(RotatingChoresContext context)
-        {
-            Chore chore;
-            
-            //ChoreId on ChoreModel is of type int?, not set until value recieved from database
-                
-            if (ChoreId != null)
-            {
-                chore = context.Chores.SingleOrDefault(c => c.ChoreId == ChoreId.Value);
-                return chore;
-            }
-           
-            //If no reference to a database object, create a new Chore
-            chore = new Chore();
-                    
-            
-            //TODO Move this block of code to an Edit controller, it will never get hit here.    
-            //if (LastCompletedById != null)
-            //{
-            //    chore.LastCompleted = LastCompleted;
-            //    ChoreDoer last = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == LastCompletedById);
-            //    chore.LastCompletedBy = last;
-            //}
-            ChoreDoer assignedTo = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == AssignedToId); 
-            chore.AssignedTo = assignedTo;
-            
-            
+        public void UpdateChore(RotatingChoresContext context, Chore chore)
+        {            
+            ChoreDoer assignedTo = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == AssignedToId);
+            chore.AssignedTo = assignedTo;                        
             chore.Description = Description;
             chore.Name = Name;
-            chore.Difficulty =(ChoreBase.DifficultyLevel) Difficulty; 
+            chore.Difficulty =(ChoreBase.DifficultyLevel) Difficulty;
 
+            if (LastCompletedById != null)
+            {
+                chore.LastCompleted = LastCompleted;
+                ChoreDoer last = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == LastCompletedById);
+                chore.LastCompletedBy = last;
+            }
+        }
 
+        public Chore GetRepresentedChore(RotatingChoresContext context)
+        {
+            Chore chore = context.Chores.SingleOrDefault(c => c.ChoreId == ChoreId);
             
-            
-    
             return chore;
         }
     }
