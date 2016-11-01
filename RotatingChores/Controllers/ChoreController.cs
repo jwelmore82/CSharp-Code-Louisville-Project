@@ -31,10 +31,13 @@ namespace RotatingChores.Controllers
 
             using (var choreContext = new RotatingChoresContext())
             {
-                var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.Single(c => c.ChoreId == id));
-
-                return View(choreModel);
+                var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.SingleOrDefault(c => c.ChoreId == id));
+                if (choreModel != null)
+                {
+                    return View(choreModel);
+                }                
             }
+            return RedirectToAction("Index");
         }
 
         public ActionResult Edit(int? id)
@@ -44,10 +47,16 @@ namespace RotatingChores.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var choreContext = new RotatingChoresContext();
-            var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.Single(c => c.ChoreId == id));
-            SetGroupMemberSelectList();
-            return View(choreModel);
+            using (var choreContext = new RotatingChoresContext())
+            {
+                var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.SingleOrDefault(c => c.ChoreId == id));
+                if (choreModel != null)
+                {
+                    SetGroupMemberSelectList();
+                    return View(choreModel);
+                }
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
@@ -114,7 +123,7 @@ namespace RotatingChores.Controllers
                     }
                 }
             }
-            var selectList = new SelectList(returnList, "ChoreDoerId", "Name", new SelectListItem{Text = "Select group member" });
+            var selectList = new SelectList(returnList, "ChoreDoerId", "Name");
             ViewBag.GroupMembers = selectList;
         }
 
