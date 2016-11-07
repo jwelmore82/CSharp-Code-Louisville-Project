@@ -19,7 +19,20 @@ namespace RotatingChores.Controllers
         // GET: Chore
         public ActionResult Index()
         {
-            return View();
+            using (var context = new RotatingChoresContext())
+            {
+                var group = GetUserGroup(context);
+                if (group != null & group.Chores.Count > 0)
+                {
+                    List<ChoreModel> chores = new List<ChoreModel>();
+                    foreach (var chore in group.Chores)
+                    {
+                        chores.Add(ChoreModel.ConvertFromChore(chore));
+                    }
+                    return View(chores);
+                }
+            } 
+            return RedirectToAction("Add");
         }
 
         public ActionResult Detail(int? id)
@@ -113,8 +126,7 @@ namespace RotatingChores.Controllers
             var returnList = new List<ChoreDoerModel>();
             using (var context = new RotatingChoresContext())
             {
-                var userGroupId = User.Identity.GetGroupId();
-                Group userGroup = context.Groups.First(g => g.GroupId == userGroupId);
+                Group userGroup = GetUserGroup(context);
                 if (userGroup.Members.Count() > 0)
                 {
                     foreach (var member in userGroup.Members)
@@ -125,6 +137,13 @@ namespace RotatingChores.Controllers
             }
             var selectList = new SelectList(returnList, "ChoreDoerId", "Name");
             ViewBag.GroupMembers = selectList;
+        }
+
+        private Group GetUserGroup(RotatingChoresContext context)
+        {
+            var userGroupId = User.Identity.GetGroupId();
+            Group userGroup = context.Groups.First(g => g.GroupId == userGroupId);
+            return userGroup;
         }
 
         //Prevents a Chore from being assigned to a ChoreDoer with a lower MaxDifficulty

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<RotatingChores.Models.ChoreModel>
+
+<p>
+    <a href="@Url.Action("Add")" class="btn btn-primary ">Create New</a>
+</p>
+<table class="table table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th class="hidden-xs">
+            @Html.DisplayNameFor(model => model.LastCompleted)
+        </th>
+        <th class="hidden-xs">
+            @Html.DisplayNameFor(model => model.LastCompletedBy)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AssignedTo)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td class="hidden-xs">
+            @Html.DisplayFor(modelItem => item.LastCompleted)
+        </td>
+        <td class="hidden-xs">
+            @Html.DisplayFor(modelItem => item.LastCompletedBy)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AssignedTo)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ChoreId }) |
+            @Html.ActionLink("Details", "Detail", new { id = item.ChoreId }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.ChoreId })
+        </td>
+    </tr>
+}
+
+</table>
