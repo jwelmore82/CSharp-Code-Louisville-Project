@@ -188,7 +188,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\ChoreController.cs" />
+    <Compile Include="Controllers\ChoresController.cs" />
     <Compile Include="Controllers\DoerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -274,13 +274,15 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Chore\Detail.cshtml" />
-    <Content Include="Views\Chore\Edit.cshtml" />
-    <Content Include="Views\Chore\Add.cshtml" />
+    <Content Include="Views\Chores\Detail.cshtml" />
+    <Content Include="Views\Chores\Edit.cshtml" />
+    <Content Include="Views\Chores\Add.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
     <Content Include="Views\Shared\_ChoreForm.cshtml" />
     <Content Include="Views\Doer\Add.cshtml" />
-    <Content Include="Views\Chore\Index.cshtml" />
+    <Content Include="Views\Chores\Index.cshtml" />
+    <Content Include="Views\Shared\_ChoreDetail.cshtml" />
+    <Content Include="Views\Chores\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

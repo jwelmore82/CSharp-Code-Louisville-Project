@@ -1,20 +1,15 @@
-﻿using Microsoft.AspNet.Identity;
-using RotatingChores.Models;
+﻿using RotatingChores.Models;
 using RotatingChoresData;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity.Owin;
-using System.Security.Principal;
 using RotatingChores.Extensions;
 using System.Net;
 
 namespace RotatingChores.Controllers
 {
     [Authorize]
-    public class ChoreController : Controller
+    public class ChoresController : Controller
     {
         // GET: Chore
         public ActionResult Index()
@@ -22,8 +17,10 @@ namespace RotatingChores.Controllers
             using (var context = new RotatingChoresContext())
             {
                 var group = GetUserGroup(context);
+                //Check to make sure the group is found and has chores
                 if (group != null & group.Chores.Count > 0)
                 {
+                    //"Index" model is of type List<ChoreModel>
                     List<ChoreModel> chores = new List<ChoreModel>();
                     foreach (var chore in group.Chores)
                     {
@@ -32,6 +29,7 @@ namespace RotatingChores.Controllers
                     return View(chores);
                 }
             } 
+            //If there are no chores in the group redirect to Add page;
             return RedirectToAction("Add");
         }
 
@@ -39,38 +37,41 @@ namespace RotatingChores.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return NullIdEncountered();
             }
 
-            using (var choreContext = new RotatingChoresContext())
+            using (var context = new RotatingChoresContext())
             {
-                var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.SingleOrDefault(c => c.ChoreId == id));
-                if (choreModel != null)
+                var chore = GetChoreById(id, context);
+                if (chore != null)
                 {
+                    var choreModel = ChoreModel.ConvertFromChore(chore);
                     return View(choreModel);
                 }                
             }
-            return RedirectToAction("Index");
+            return ChoreNotFound();
         }
 
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return NullIdEncountered();
             }
 
-            using (var choreContext = new RotatingChoresContext())
+            using (var context = new RotatingChoresContext())
             {
-                var choreModel = ChoreModel.ConvertFromChore(choreContext.Chores.SingleOrDefault(c => c.ChoreId == id));
-                if (choreModel != null)
+                var chore = GetChoreById(id, context);
+                if (chore != null)
                 {
+                    var choreModel = ChoreModel.ConvertFromChore(chore);
                     SetGroupMemberSelectList();
                     return View(choreModel);
                 }
-                return RedirectToAction("Index");
+                return ChoreNotFound();
             }
         }
+
 
         [HttpPost]
         public ActionResult Edit(ChoreModel model)
@@ -84,6 +85,7 @@ namespace RotatingChores.Controllers
                 if (ModelState.IsValid)
                 {
                     context.SaveChanges();
+                    TempData["Message"] = "Chore has been updated!";
                     return RedirectToAction("Index");
                 }
             }
@@ -98,13 +100,13 @@ namespace RotatingChores.Controllers
         }
 
         [HttpPost]
-        public ActionResult Add(ChoreModel newChore)
+        public ActionResult Add(ChoreModel choreModel)
         {
             
             using (var context = new RotatingChoresContext())
             {
                 var addingChore = context.Chores.Create();
-                newChore.UpdateChore(context, addingChore);
+                choreModel.UpdateChore(context, addingChore);
                                 
                 ValidateAssignTo(addingChore);
                 if (ModelState.IsValid)
@@ -112,14 +114,64 @@ namespace RotatingChores.Controllers
                     addingChore.GroupId = User.Identity.GetGroupId();
                     context.Chores.Add(addingChore);
                     context.SaveChanges();
+                    TempData["Message"] = "New chore added!";
                     return RedirectToAction("Index");
                 }
+
+                //If there is a problem with the model
                 SetGroupMemberSelectList();
-                return View(newChore);
+                return View(choreModel);
             }
 
             
         }
+        [HttpGet]
+        public ActionResult Delete(int? id)
+        {
+            using (var context = new RotatingChoresContext())
+            {
+                if (id == null)
+                {
+                    return NullIdEncountered();
+                }
+                var chore = GetChoreById(id, context);
+                if (chore != null)
+                {
+                    var choreModel = ChoreModel.ConvertFromChore(chore);
+                    return View(choreModel);
+                }
+                
+            }
+
+            return ChoreNotFound();
+
+            
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public ActionResult DeletePost(int id)
+        {
+            using (var context = new RotatingChoresContext())
+            {
+
+                var chore = GetChoreById(id, context);
+                if (chore != null)
+                {
+                    context.Chores.Remove(chore);
+                    context.SaveChanges();
+                    TempData["Message"] = "Chore successfully deleted!";
+                    return RedirectToAction("Index");
+                }
+                
+                TempData["FailureMessage"] = "There was an issuse deleting the chore.";
+                return RedirectToAction("Index");
+            }
+            
+        }
+
+
+        //The following are the methods used in this controller.
+        //*****************************************************************************************
 
         private void SetGroupMemberSelectList()
         {
@@ -153,6 +205,29 @@ namespace RotatingChores.Controllers
             {
                 ModelState.AddModelError("Difficulty", "This chore is too difficult for the selected user. Change Difficulty or raise MaxDifficulty for the user.");
             }
+        }
+
+        //Gets the Chore using ChoreId 
+        private static Chore GetChoreById(int? id, RotatingChoresContext context)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            return context.Chores.SingleOrDefault(c => c.ChoreId == id);
+        }
+        //Use when Id is expected but not given.
+        private ActionResult NullIdEncountered()
+        {
+            TempData["FailureMessage"] = "No chore specified.";
+            return RedirectToAction("Index");
+        }
+
+        //Use when Chore is expected but not found.
+        private ActionResult ChoreNotFound()
+        {
+            TempData["FailureMessage"] = "The requested chore could not be found.";
+            return RedirectToAction("Index");
         }
     }
 }

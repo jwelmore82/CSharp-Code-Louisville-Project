@@ -1,0 +1,15 @@
+﻿@model RotatingChores.Models.ChoreModel
+
+@{
+    ViewBag.Title = "Chore";
+}
+
+<h2>Chore</h2>
+
+
+    @Html.Partial("_ChoreDetail")
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ChoreId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -54,6 +54,9 @@ namespace RotatingChores.Models
             return model;
         }
 
+
+        //This method uses the ChoreModel to update the given chore in the given context.
+        //Be sure to call SaveChanges() after updating.
         public void UpdateChore(RotatingChoresContext context, Chore chore)
         {            
             ChoreDoer assignedTo = context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == AssignedToId);
