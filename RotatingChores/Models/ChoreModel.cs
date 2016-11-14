@@ -73,11 +73,43 @@ namespace RotatingChores.Models
             }
         }
 
+        //Uses the ChoreId of the model to get the represented data entity Chore.
         public Chore GetRepresentedChore(RotatingChoresContext context)
         {
             Chore chore = context.Chores.SingleOrDefault(c => c.ChoreId == ChoreId);
             
             return chore;
+        }
+
+        public void MarkComplete()
+        {
+            LastCompleted = DateTime.Now;
+            LastCompletedById = AssignedToId;
+            LastCompletedBy = AssignedTo;            
+        }
+
+        public void AdvanceChore(Chore chore, Group group)
+        {
+            //Gets a list of ChoreDoers this chore can be assigned to.
+            var membersAvailable = group.Members.Where(c => c.MaxDifficulty >= chore.Difficulty).ToList();
+            //Only one person in the list indicates the only ChoreDoer capable of the job is the currently assigned.
+            //No change in assignment.          
+            if (membersAvailable.Count > 1)
+            {
+                var position = membersAvailable.IndexOf(chore.AssignedTo);
+                //If the ChoreDoer is the last in the list assign the chore to the first person in the list.
+                if (position == membersAvailable.Count - 1)
+                {
+                    chore.AssignedTo = membersAvailable[0];
+                }
+                //If not assign the chore to the next person in the list.
+                else
+                {
+                    chore.AssignedTo = membersAvailable[position + 1];
+                }
+            }
+            
+
         }
     }
 

@@ -283,6 +283,7 @@
     <Content Include="Views\Chores\Index.cshtml" />
     <Content Include="Views\Shared\_ChoreDetail.cshtml" />
     <Content Include="Views\Chores\Delete.cshtml" />
+    <Content Include="Views\Chores\MarkComplete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

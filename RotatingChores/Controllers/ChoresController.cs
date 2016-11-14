@@ -64,6 +64,11 @@ namespace RotatingChores.Controllers
                 var chore = GetChoreById(id, context);
                 if (chore != null)
                 {
+                    //TODO Only members of the group shold be able to edit chores. Create group validation.
+                    //if (chore.GroupId != User.Identity.GetGroupId())
+                    //{
+                        
+                    //}
                     var choreModel = ChoreModel.ConvertFromChore(chore);
                     SetGroupMemberSelectList();
                     return View(choreModel);
@@ -169,6 +174,51 @@ namespace RotatingChores.Controllers
             
         }
 
+        public ActionResult MarkComplete(int? id)
+        {
+            using (var context = new RotatingChoresContext())
+            {
+                if (id == null)
+                {
+                    return NullIdEncountered();
+                }
+                var chore = GetChoreById(id, context);
+                if (chore != null)
+                {
+                    var choreModel = ChoreModel.ConvertFromChore(chore);
+                    return View(choreModel);
+                }
+
+            }
+
+            return ChoreNotFound();
+
+        }
+
+        [HttpPost, ActionName("MarkComplete")]
+        public ActionResult MarkCompletePost(int? id)
+        {
+            using (var context = new RotatingChoresContext())
+            {
+
+                var chore = GetChoreById(id, context);
+                if (chore != null)
+                {
+                    var group = GetUserGroup(context);
+                    var choreModel = ChoreModel.ConvertFromChore(chore);
+                    choreModel.MarkComplete();
+                    choreModel.UpdateChore(context, chore);
+                    choreModel.AdvanceChore(chore, group);
+                    context.SaveChanges();
+                    TempData["Message"] = "Chore marked complete! Good Job!";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["FailureMessage"] = "There was an issuse completing the chore.";
+                return RedirectToAction("Index");
+            }
+        }
+
 
         //The following are the methods used in this controller.
         //*****************************************************************************************
@@ -223,7 +273,7 @@ namespace RotatingChores.Controllers
             return RedirectToAction("Index");
         }
 
-        //Use when Chore is expected but not found.
+        //Use when ChoreId valid but not found.
         private ActionResult ChoreNotFound()
         {
             TempData["FailureMessage"] = "The requested chore could not be found.";
