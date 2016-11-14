@@ -1,11 +1,13 @@
 ﻿@model RotatingChores.Models.ChoreModel
 
+<h4 class="panel-heading">Chore</h4>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>Chore</h4>
+    
+    <div class="form-horizontal  @ViewBag.Background">
+        
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -39,7 +41,7 @@
             </div>
         </div>
         @*Need this to have ChoreId on submitted model.*@
-        @Html.HiddenFor(model => model.ChoreId);
+        @Html.HiddenFor(model => model.ChoreId)
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />

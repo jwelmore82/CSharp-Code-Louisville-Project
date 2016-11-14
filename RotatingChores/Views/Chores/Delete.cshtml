@@ -2,14 +2,16 @@
 
 @{
     ViewBag.Title = "Delete";
+    ViewBag.Background = "bg-danger";
 }
 
 <h2>Delete</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to delete this chore?</h3>
 <div>
-    @Html.Partial("_ChoreDetail")
-
+    <div class="panel panel-danger">
+        @Html.Partial("_ChoreDetail")
+    </div>
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 

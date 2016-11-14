@@ -1,53 +1,60 @@
 ﻿@model IEnumerable<RotatingChores.Models.ChoreModel>
 
 
+
+
 <h2 class="text-center">Group Chores Overview</h2>
-<p>
-    <a href="@Url.Action("Add")" class="btn btn-primary ">Create New Chore</a>
-</p>
-<table class="table table-striped table-hover">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AssignedTo)
-        </th>
-        <th class="hidden-xs">
-            @Html.DisplayNameFor(model => model.LastCompleted)
-        </th>
-        <th class="hidden-xs">
-            @Html.DisplayNameFor(model => model.LastCompletedBy)
-        </th>
-        <th></th>
-    </tr>
 
-@foreach (var item in Model) {
-    <tr onclick="window.location.href = '/Chores/Edit/@item.ChoreId'">
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AssignedTo)
-        </td>
-        <td class="hidden-xs">
-            @Html.DisplayFor(modelItem => item.LastCompleted)
-        </td>
-        <td class="hidden-xs">
-            @Html.DisplayFor(modelItem => item.LastCompletedBy)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ChoreId }) |
-            @Html.ActionLink("Details", "Detail", new { id = item.ChoreId }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.ChoreId })
-        </td>
-    </tr>
-}
+<div class="panel panel-primary">
+    
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedTo)
+            </th>
+            <th class="hidden-xs">
+                @Html.DisplayNameFor(model => model.LastCompleted)
+            </th>
+            <th class="hidden-xs">
+                @Html.DisplayNameFor(model => model.LastCompletedBy)
+            </th>
+            <th></th>
+        </tr>
 
-</table>
+    @foreach (var item in Model) {
+        <tr onclick="window.location.href = '/Chores/Detail/@item.ChoreId'">
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedTo)
+            </td>
+            <td class="hidden-xs">
+                @Html.DisplayFor(modelItem => item.LastCompleted)
+            </td>
+            <td class="hidden-xs">
+                @Html.DisplayFor(modelItem => item.LastCompletedBy)
+            </td>
+            <td>
+                <a type="button" role="button" class="btn btn-default" href="@Url.Action("Edit", new { id=item.ChoreId })">Edit</a >
+                <a type="button" role="button" class="btn btn-info" href="@Url.Action("Detail", new { id=item.ChoreId })">Details</a>
+                <a type="button" role="button" class="btn btn-danger" href="@Url.Action("Delete", new { id=item.ChoreId })">Delete</a>                
+            </td>
+        </tr>
+    }
+
+    </table>
+    <p>
+        <a href="@Url.Action("Add")" class="btn btn-primary btn-sm">Create New Chore</a> 
+    </p>
+</div>
+

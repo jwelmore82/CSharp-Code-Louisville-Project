@@ -1,10 +1,8 @@
 ﻿@model RotatingChores.Models.ChoreModel
 
 
-<div>
-    <h4>Chore Detail</h4>
-    <hr />
-    <dl class="dl-horizontal">
+    <h4 class="panel-heading">Chore Detail</h4>
+    <dl class="dl-horizontal @ViewBag.Background">
         <dt>
             @Html.DisplayNameFor(model => model.Name)
         </dt>
@@ -55,4 +53,4 @@
         </dd>
 
     </dl>
- </div>
+

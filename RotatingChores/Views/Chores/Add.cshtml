@@ -2,9 +2,11 @@
 
 @{
     ViewBag.Title = "Add";
+    ViewBag.Background = "bg-success";
 }
 
-<h2>Add Chore</h2>
+<h2>Add</h2>
 
-
-@Html.Partial("_ChoreForm")
+<div class="panel panel-success">
+    @Html.Partial("_ChoreForm")
+</div>

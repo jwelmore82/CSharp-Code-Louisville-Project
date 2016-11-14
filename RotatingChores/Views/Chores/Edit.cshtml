@@ -2,9 +2,11 @@
 
 @{
     ViewBag.Title = "Edit";
+    ViewBag.Background = "bg-info";
 }
 
 <h2>Edit</h2>
 
-
-@Html.Partial("_ChoreForm")
+<div class="panel panel-info">
+    @Html.Partial("_ChoreForm")
+</div>
