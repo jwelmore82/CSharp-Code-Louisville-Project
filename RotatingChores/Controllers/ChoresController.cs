@@ -9,7 +9,7 @@ using System.Net;
 namespace RotatingChores.Controllers
 {
     [Authorize]
-    public class ChoresController : Controller
+    public class ChoresController : AppControllerBase
     {
         // GET: Chore
         public ActionResult Index()
@@ -205,9 +205,13 @@ namespace RotatingChores.Controllers
                 if (chore != null)
                 {
                     var group = GetUserGroup(context);
+                    //Working with the model
                     var choreModel = ChoreModel.ConvertFromChore(chore);
+                    //Change LastCompleted etc on model
                     choreModel.MarkComplete();
+                    //Use model to update chore
                     choreModel.UpdateChore(context, chore);
+                    //Assign chore to next available person.
                     choreModel.AdvanceChore(chore, group);
                     context.SaveChanges();
                     TempData["Message"] = "Chore marked complete! Good Job!";
@@ -241,12 +245,6 @@ namespace RotatingChores.Controllers
             ViewBag.GroupMembers = selectList;
         }
 
-        private Group GetUserGroup(RotatingChoresContext context)
-        {
-            var userGroupId = User.Identity.GetGroupId();
-            Group userGroup = context.Groups.First(g => g.GroupId == userGroupId);
-            return userGroup;
-        }
 
         //Prevents a Chore from being assigned to a ChoreDoer with a lower MaxDifficulty
         private void ValidateAssignTo(Chore chore)
@@ -266,14 +264,10 @@ namespace RotatingChores.Controllers
             }
             return context.Chores.SingleOrDefault(c => c.ChoreId == id);
         }
-        //Use when Id is expected but not given.
-        private ActionResult NullIdEncountered()
-        {
-            TempData["FailureMessage"] = "No chore specified.";
-            return RedirectToAction("Index");
-        }
 
-        //Use when ChoreId valid but not found.
+
+
+        //Use when ChoreId valid but not found( e.g. SingleOrDefault returns null).
         private ActionResult ChoreNotFound()
         {
             TempData["FailureMessage"] = "The requested chore could not be found.";

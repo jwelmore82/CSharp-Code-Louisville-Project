@@ -92,8 +92,7 @@ namespace RotatingChores.Models
         {
             //Gets a list of ChoreDoers this chore can be assigned to.
             var membersAvailable = group.Members.Where(c => c.MaxDifficulty >= chore.Difficulty).ToList();
-            //Only one person in the list indicates the only ChoreDoer capable of the job is the currently assigned.
-            //No change in assignment.          
+            //If there is more than one ChoreDoer in the list                     
             if (membersAvailable.Count > 1)
             {
                 var position = membersAvailable.IndexOf(chore.AssignedTo);
@@ -107,6 +106,11 @@ namespace RotatingChores.Models
                 {
                     chore.AssignedTo = membersAvailable[position + 1];
                 }
+            }
+            else
+            {
+                //If only one person in the list they must be assigned the chore.  
+                chore.AssignedTo = membersAvailable[0];
             }
             
 

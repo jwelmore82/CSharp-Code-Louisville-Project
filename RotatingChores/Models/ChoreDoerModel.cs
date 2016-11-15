@@ -39,15 +39,16 @@ namespace RotatingChores.Models
             return model;
         }
 
-        public void AddChoresList(RotatingChoresContext context, ChoreDoer doer)
+        public void AddChoresList(ChoreDoer doer, Group group)
         {
             var choreModels = new List<ChoreModel>();
-            var chores = context.Chores. Where(c => c.AssignedTo == doer).ToList();
-            if (chores.Count > 0)
+
+            var chores = group.Chores.Where(c => c.AssignedTo == doer);
+            if (chores.Count() > 0)
             {
                 foreach (var chore in chores)
-                {
-                    choreModels.Add(ChoreModel.ConvertFromChore(chore));
+                {                 
+                        choreModels.Add(ChoreModel.ConvertFromChore(chore));                    
                 }
             }
 
@@ -58,11 +59,6 @@ namespace RotatingChores.Models
         {
             var doer = context.ChoreDoers.SingleOrDefault(d => d.ChoreDoerId == ChoreDoerId);
             return doer;
-        }
-
-        public override string ToString()
-        {
-            return $"{Name}({MaxDifficulty})";
         }
     }
 }

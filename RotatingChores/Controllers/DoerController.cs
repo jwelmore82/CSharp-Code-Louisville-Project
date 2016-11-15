@@ -10,7 +10,7 @@ using RotatingChores.Extensions;
 namespace RotatingChores.Controllers
 {
     [Authorize]
-    public class DoerController : Controller
+    public class DoerController : AppControllerBase
     {
         // GET: Doer
         public ActionResult Index()
@@ -18,10 +18,26 @@ namespace RotatingChores.Controllers
             return View();
         }
 
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                NullIdEncountered();
+            }
+            using (var context = new RotatingChoresContext())
+            {
+                var doer = GetDoerById(id, context);
+                var userGroup = GetUserGroup(context);
+                var doerModel = ChoreDoerModel.ConvertFromDoer(doer);
+                doerModel.AddChoresList(doer, userGroup);
+                return View(doerModel);
+            }
+        }
+
         public ActionResult Add()
         {
-            var doerModel = new ChoreDoerModel();
-            return View(doerModel);
+            
+            return View();
         }
 
         [HttpPost]
@@ -39,13 +55,75 @@ namespace RotatingChores.Controllers
                     context.SaveChanges();
                     TempData["Message"] = "New group member added!";
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    TempData["FailureMessage"] = e.Message;
                     return View(model);
                 }
             }
             return RedirectToAction("Index", "Chores");
+        }
+
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                NullIdEncountered();
+            }
+            using (var context = new RotatingChoresContext())
+            {
+                var doer = GetDoerById(id, context);
+                if (doer != null)
+                {
+                    var doerModel = ChoreDoerModel.ConvertFromDoer(doer);
+                    return View(doerModel);
+                }
+                
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult Edit(ChoreDoerModel doerModel)
+        {
+            using (var context = new RotatingChoresContext())
+            {
+                var doer = doerModel.GetRepresentedDoer(context);
+                var group = GetUserGroup(context);
+                doerModel.AddChoresList(doer, group);
+                ValidateChores(doerModel);
+                if (ModelState.IsValid)
+                {
+                    context.SaveChanges();
+                    TempData["Message"] = "Chore doer profile has been updated!";
+                    return RedirectToAction("Index");
+                }
+            }
+            return View(doerModel);
+        }
+
+        private static ChoreDoer GetDoerById(int? id, RotatingChoresContext context)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            return context.ChoreDoers.SingleOrDefault(c => c.ChoreDoerId == id);
+        }
+        private void ValidateChores(ChoreDoerModel model)
+        {
+            var pass = true;
+            foreach (var chore in model.Chores)
+            {
+                if (chore.Difficulty > model.MaxDifficulty)
+                {
+                    pass = false;
+                }
+            }
+            if (!pass)
+            {
+                ModelState.AddModelError("MaxDifficulty", "This user has chores assigned above this difficulty. Reassign chores or raise Max Difficulty");
+            }
         }
     }
 }
