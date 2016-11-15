@@ -45,6 +45,7 @@
                 @Html.DisplayFor(modelItem => item.LastCompletedBy)
             </td>
             <td>
+                <a type="button" role="button" class="btn btn-success" href="@Url.Action("MarkComplete", new { id=item.ChoreId })">Complete</a>
                 <a type="button" role="button" class="btn btn-default" href="@Url.Action("Edit", new { id=item.ChoreId })">Edit</a >
                 <a type="button" role="button" class="btn btn-info" href="@Url.Action("Detail", new { id=item.ChoreId })">Details</a>
                 <a type="button" role="button" class="btn btn-danger" href="@Url.Action("Delete", new { id=item.ChoreId })">Delete</a>                

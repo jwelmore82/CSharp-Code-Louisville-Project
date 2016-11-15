@@ -11,24 +11,21 @@ namespace RotatingChores.Models
     public class ChoreDoerModel
     {
         
-        public int ChoreDoerId { get; set; }
+        public int? ChoreDoerId { get; set; }
 
         public string Name { get; set; }
 
         public string Email { get; set; }
 
-        public ChoreBase.DifficultyLevel MaxDifficulty { get; set; }
+        public ChoreBase.DifficultyLevel? MaxDifficulty { get; set; }
 
-        public ICollection<Chore> Chores { get; set; }
+        public ICollection<ChoreModel> Chores { get; set; }
 
-        public ChoreDoer CovertToDoer()
-        {
-            var doer = new ChoreDoer();
-            doer.ChoreDoerId = ChoreDoerId;
+        public void UpdateDoer(ChoreDoer doer)
+        {         
             doer.Name = Name;
             doer.Email = Email;
-            doer.MaxDifficulty = MaxDifficulty;
-            return doer;
+            doer.MaxDifficulty =(ChoreBase.DifficultyLevel) MaxDifficulty;
         }
 
         public static ChoreDoerModel ConvertFromDoer(ChoreDoer doer)
@@ -40,6 +37,27 @@ namespace RotatingChores.Models
             model.MaxDifficulty = doer.MaxDifficulty;
 
             return model;
+        }
+
+        public void AddChoresList(RotatingChoresContext context, ChoreDoer doer)
+        {
+            var choreModels = new List<ChoreModel>();
+            var chores = context.Chores. Where(c => c.AssignedTo == doer).ToList();
+            if (chores.Count > 0)
+            {
+                foreach (var chore in chores)
+                {
+                    choreModels.Add(ChoreModel.ConvertFromChore(chore));
+                }
+            }
+
+            Chores = choreModels;
+        }
+
+        public ChoreDoer GetRepresentedDoer(RotatingChoresContext context)
+        {
+            var doer = context.ChoreDoers.SingleOrDefault(d => d.ChoreDoerId == ChoreDoerId);
+            return doer;
         }
 
         public override string ToString()

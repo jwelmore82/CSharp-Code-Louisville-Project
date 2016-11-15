@@ -18,7 +18,7 @@ namespace RotatingChores.Models
         public ChoreBase.DifficultyLevel? Difficulty { get; set; }
 
         public string Description { get; set; }
-        [Display(Name = "Last Completed On")]
+        [Display(Name = "Last Completed")]
         public DateTime? LastCompleted { get; set; }
 
         [Display(Name = "Last Completed By")]

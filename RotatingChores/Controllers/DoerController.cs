@@ -20,17 +20,19 @@ namespace RotatingChores.Controllers
 
         public ActionResult Add()
         {
-            return View();
+            var doerModel = new ChoreDoerModel();
+            return View(doerModel);
         }
 
         [HttpPost]
         public ActionResult Add(ChoreDoerModel model)
         {
-            var newDoer = model.CovertToDoer();
-            newDoer.GroupId = User.Identity.GetGroupId();
+
             using (var context = new RotatingChoresContext())
             {
-
+                var newDoer = context.ChoreDoers.Create();
+                newDoer.GroupId = User.Identity.GetGroupId();
+                model.UpdateDoer(newDoer);
                 try
                 {
                     context.ChoreDoers.Add(newDoer);
