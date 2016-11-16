@@ -1,0 +1,59 @@
+﻿@model IEnumerable<RotatingChores.Models.ChoreDoerModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2 class="text-center">Member Index</h2>
+
+<div class="panel panel-primary">
+<table class="table table-striped table-responsive">
+    <tr>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th class="visible-lg">
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MaxDifficulty)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Chores)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td class="visible-lg">
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MaxDifficulty)
+        </td>
+        <td>
+            @foreach (var chore in item.Chores)
+            {
+                <p>
+                    <a href="@Url.Action("Detail", "Chores", new { id = @chore.ChoreId })">
+                        @Html.DisplayFor(modelItem => chore.Name)
+                    </a>
+                </p>
+            }
+        </td>
+        <td>
+            <a type="button" role="button" class="btn btn-default" href="@Url.Action("Edit", new { id=item.ChoreDoerId })">Edit</a>
+            <a type="button" role="button" class="btn btn-info" href="@Url.Action("Details", new { id=item.ChoreDoerId })">Details</a>
+            <a type="button" role="button" class="btn btn-danger" href="@Url.Action("Delete", new { id=item.ChoreDoerId })">Delete</a>
+        </td>
+    </tr>
+}
+
+</table>
+    </div>

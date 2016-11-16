@@ -288,6 +288,9 @@
     <Content Include="Views\Doer\Details.cshtml" />
     <Content Include="Views\Shared\_DoerForm.cshtml" />
     <Content Include="Views\Doer\Edit.cshtml" />
+    <Content Include="Views\Doer\Delete.cshtml" />
+    <Content Include="Views\Shared\_DoerDetail.cshtml" />
+    <Content Include="Views\Doer\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

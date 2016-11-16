@@ -15,7 +15,22 @@ namespace RotatingChores.Controllers
         // GET: Doer
         public ActionResult Index()
         {
-            return View();
+            using (var context = new RotatingChoresContext())
+            {
+                var group = GetUserGroup(context);
+                var modelList = new List<ChoreDoerModel>();
+                if (group.Members.Count > 0)
+                {
+                    foreach (var doer in group.Members)
+                    {
+                        var doerModel = ChoreDoerModel.ConvertFromDoer(doer);
+                        doerModel.AddChoresList(doer, group);
+                        modelList.Add(doerModel);
+                    }
+                }
+                return View(modelList);
+            }
+            
         }
 
         public ActionResult Details(int? id)
@@ -94,6 +109,7 @@ namespace RotatingChores.Controllers
                 ValidateChores(doerModel);
                 if (ModelState.IsValid)
                 {
+                    doerModel.UpdateDoer(doer);
                     context.SaveChanges();
                     TempData["Message"] = "Chore doer profile has been updated!";
                     return RedirectToAction("Index");

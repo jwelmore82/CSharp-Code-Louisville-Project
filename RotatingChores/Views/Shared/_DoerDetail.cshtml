@@ -1,0 +1,39 @@
+﻿@model RotatingChores.Models.ChoreDoerModel
+
+<h4 class="panel-heading">Chore Doer</h4>
+<hr />
+<dl class="dl-horizontal @ViewBag.Background">
+
+    <dt>
+        @Html.DisplayNameFor(model => model.Name)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Name)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.Email)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Email)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(model => model.MaxDifficulty)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.MaxDifficulty)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(model => model.Chores)
+    </dt>
+    @foreach (var chore in Model.Chores)
+    {
+        <dd>
+            @Html.DisplayFor(modelItem => chore.Name)
+        </dd>
+    }
+
+</dl>
