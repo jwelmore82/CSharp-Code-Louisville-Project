@@ -16,7 +16,7 @@
         <th class="visible-lg">
             @Html.DisplayNameFor(model => model.Email)
         </th>
-        <th>
+        <th class="hidden-sm hidden-xs">
             @Html.DisplayNameFor(model => model.MaxDifficulty)
         </th>
         <th>
@@ -34,7 +34,7 @@
         <td class="visible-lg">
             @Html.DisplayFor(modelItem => item.Email)
         </td>
-        <td>
+        <td class="hidden-sm hidden-xs">
             @Html.DisplayFor(modelItem => item.MaxDifficulty)
         </td>
         <td>
@@ -50,10 +50,13 @@
         <td>
             <a type="button" role="button" class="btn btn-default" href="@Url.Action("Edit", new { id=item.ChoreDoerId })">Edit</a>
             <a type="button" role="button" class="btn btn-info" href="@Url.Action("Details", new { id=item.ChoreDoerId })">Details</a>
-            <a type="button" role="button" class="btn btn-danger" href="@Url.Action("Delete", new { id=item.ChoreDoerId })">Delete</a>
+            <a type="button" role="button" class="btn btn-danger hidden-sm hidden-xs" href="@Url.Action("Delete", new { id=item.ChoreDoerId })">Delete</a>
         </td>
     </tr>
 }
 
 </table>
+    <p>
+        <a href="@Url.Action("Add")" class="btn btn-primary btn-sm">Add New Member</a>
+    </p>
     </div>

@@ -12,7 +12,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th>
+            <th class="hidden-xs">
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
@@ -32,7 +32,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-            <td>
+            <td class="hidden-xs">
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
@@ -46,9 +46,9 @@
             </td>
             <td>
                 <a type="button" role="button" class="btn btn-success" href="@Url.Action("MarkComplete", new { id=item.ChoreId })">Complete</a>
-                <a type="button" role="button" class="btn btn-default" href="@Url.Action("Edit", new { id=item.ChoreId })">Edit</a >
+                <a type="button" role="button" class="btn btn-default hidden-xs" href="@Url.Action("Edit", new { id=item.ChoreId })">Edit</a >
                 <a type="button" role="button" class="btn btn-info" href="@Url.Action("Detail", new { id=item.ChoreId })">Details</a>
-                <a type="button" role="button" class="btn btn-danger" href="@Url.Action("Delete", new { id=item.ChoreId })">Delete</a>                
+                <a type="button" role="button" class="btn btn-danger hidden-xs" href="@Url.Action("Delete", new { id=item.ChoreId })">Delete</a>                
             </td>
         </tr>
     }
