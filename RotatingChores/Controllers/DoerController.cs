@@ -120,6 +120,7 @@ namespace RotatingChores.Controllers
                             context.ChoreDoers.Remove(doer);
                             context.SaveChanges();
                             TempData["Message"] = "Chore doer successfully deleted!";
+                            return RedirectToAction("Index", "Doer");
                         }
                         catch(System.Data.Entity.Infrastructure.DbUpdateException)
                         {

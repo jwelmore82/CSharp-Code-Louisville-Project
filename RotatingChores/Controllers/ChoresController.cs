@@ -28,8 +28,9 @@ namespace RotatingChores.Controllers
                     }
                     return View(chores);
                 }
-            } 
+            }
             //If there are no chores in the group redirect to Add page;
+            TempData["Message"] = "No chores yet, add one now!";
             return RedirectToAction("Add");
         }
 

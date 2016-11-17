@@ -31,7 +31,10 @@ namespace RotatingChores.Controllers
                     var choreDoer = context.ChoreDoers.FirstOrDefault(c => c.Email == email);
                     if (choreDoer == null)
                     {
-                        ViewBag.Message = "You have not set up your Chore Doer Profile";
+                        var model = new ChoreDoerModel();
+                        model.Email = email;
+                        TempData["Message"] = "You have not set up your Chore Doer Profile. Select Max Difficulty 'None' to be excluded from chores.";
+                        return RedirectToAction("Add", "Doer", model);                     
                     }
                     else
                     {
