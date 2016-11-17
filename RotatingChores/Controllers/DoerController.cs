@@ -115,9 +115,17 @@ namespace RotatingChores.Controllers
                 {
                     if (IsGroupObject(doer.GroupId))
                     {
-                        context.ChoreDoers.Remove(doer);
-                        context.SaveChanges();
-                        TempData["Message"] = "Chore doer successfully deleted!";
+                        try
+                        {
+                            context.ChoreDoers.Remove(doer);
+                            context.SaveChanges();
+                            TempData["Message"] = "Chore doer successfully deleted!";
+                        }
+                        catch(System.Data.Entity.Infrastructure.DbUpdateException)
+                        {
+                            TempData["FailureMessage"] = "Member must not have chores assigned or be the last to complete a chore.";
+                            return RedirectToAction("Index", "Chores");
+                        }
                     }
                     return InvalidGroup();
                 }
