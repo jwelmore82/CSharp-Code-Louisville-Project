@@ -35,48 +35,15 @@ namespace RotatingChores.Controllers
 
         public ActionResult Detail(int? id)
         {
-            if (id == null)
-            {
-                return NullIdEncountered();
-            }
-
-            using (var context = new RotatingChoresContext())
-            {
-                var chore = GetChoreById(id, context);
-                if (chore != null)
-                {
-                    var choreModel = ChoreModel.ConvertFromChore(chore);
-                    return View(choreModel);
-                }                
-            }
-            return ChoreNotFound();
+            return ViewChoreById(id);
         }
 
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return NullIdEncountered();
-            }
-
-            using (var context = new RotatingChoresContext())
-            {
-                var chore = GetChoreById(id, context);
-                if (chore != null)
-                {
-                    //TODO Only members of the group shold be able to edit chores. Create group validation.
-                    //if (chore.GroupId != User.Identity.GetGroupId())
-                    //{
-                        
-                    //}
-                    var choreModel = ChoreModel.ConvertFromChore(chore);
-                    SetGroupMemberSelectList();
-                    return View(choreModel);
-                }
-                return ChoreNotFound();
-            }
+            return ViewChoreById(id);
         }
 
+        
 
         [HttpPost]
         public ActionResult Edit(ChoreModel model)
@@ -93,15 +60,20 @@ namespace RotatingChores.Controllers
                     TempData["Message"] = "Chore has been updated!";
                     return RedirectToAction("Index");
                 }
+                SetGroupMemberSelectList(context);
+                return View(model);
             }
-            SetGroupMemberSelectList();
-            return View(model);
+            
         }
 
         public ActionResult Add()
         {
-            SetGroupMemberSelectList();
-            return View();
+            using (var context = new RotatingChoresContext())
+            {
+                SetGroupMemberSelectList(context);
+                return View();
+            }
+            
         }
 
         [HttpPost]
@@ -124,7 +96,7 @@ namespace RotatingChores.Controllers
                 }
 
                 //If there is a problem with the model
-                SetGroupMemberSelectList();
+                SetGroupMemberSelectList(context);
                 return View(choreModel);
             }
 
@@ -133,22 +105,8 @@ namespace RotatingChores.Controllers
         [HttpGet]
         public ActionResult Delete(int? id)
         {
-            using (var context = new RotatingChoresContext())
-            {
-                if (id == null)
-                {
-                    return NullIdEncountered();
-                }
-                var chore = GetChoreById(id, context);
-                if (chore != null)
-                {
-                    var choreModel = ChoreModel.ConvertFromChore(chore);
-                    return View(choreModel);
-                }
-                
-            }
 
-            return ChoreNotFound();
+            return ViewChoreById(id);
 
             
         }
@@ -160,7 +118,7 @@ namespace RotatingChores.Controllers
             {
 
                 var chore = GetChoreById(id, context);
-                if (chore != null)
+                if (chore != null && IsGroupObject(chore.GroupId))
                 {
                     context.Chores.Remove(chore);
                     context.SaveChanges();
@@ -176,22 +134,7 @@ namespace RotatingChores.Controllers
 
         public ActionResult MarkComplete(int? id)
         {
-            using (var context = new RotatingChoresContext())
-            {
-                if (id == null)
-                {
-                    return NullIdEncountered();
-                }
-                var chore = GetChoreById(id, context);
-                if (chore != null)
-                {
-                    var choreModel = ChoreModel.ConvertFromChore(chore);
-                    return View(choreModel);
-                }
-
-            }
-
-            return ChoreNotFound();
+            return ViewChoreById(id);
 
         }
 
@@ -202,7 +145,7 @@ namespace RotatingChores.Controllers
             {
 
                 var chore = GetChoreById(id, context);
-                if (chore != null)
+                if (chore != null && IsGroupObject(chore.GroupId))
                 {
                     var group = GetUserGroup(context);
                     //Working with the model
@@ -227,20 +170,45 @@ namespace RotatingChores.Controllers
         //The following are the methods used in this controller.
         //*****************************************************************************************
 
-        private void SetGroupMemberSelectList()
+        //Returns a view with a ChoreModel if all checks pass.
+        private ActionResult ViewChoreById(int? id)
         {
-            var returnList = new List<ChoreDoerModel>();
+            //Check for existing Id
+            if (id == null)
+            {
+                return NullIdEncountered();
+            }
+
             using (var context = new RotatingChoresContext())
             {
-                Group userGroup = GetUserGroup(context);
-                if (userGroup.Members.Count() > 0)
+                var chore = GetChoreById(id, context);
+                //Check for chore in database
+                if (chore != null)
                 {
-                    foreach (var member in userGroup.Members)
+                    //Check if Chore is in user's group
+                    if (IsGroupObject(chore.GroupId))
                     {
-                        returnList.Add(ChoreDoerModel.ConvertFromDoer(member));
+                        var choreModel = ChoreModel.ConvertFromChore(chore);
+                        SetGroupMemberSelectList(context);
+                        return View(choreModel);
                     }
+                    return InvalidGroup();
                 }
+                return ChoreNotFound();
             }
+        }
+
+        private void SetGroupMemberSelectList(RotatingChoresContext context)
+        {
+            var returnList = new List<ChoreDoerModel>();                       
+            Group userGroup = GetUserGroup(context);
+            if (userGroup.Members.Count() > 0)
+            {
+                foreach (var member in userGroup.Members)
+                {
+                    returnList.Add(ChoreDoerModel.ConvertFromDoer(member));
+                }
+            }            
             var selectList = new SelectList(returnList, "ChoreDoerId", "Name");
             ViewBag.GroupMembers = selectList;
         }

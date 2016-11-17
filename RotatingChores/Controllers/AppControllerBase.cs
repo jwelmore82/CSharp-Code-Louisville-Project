@@ -22,5 +22,23 @@ namespace RotatingChores.Controllers
             TempData["FailureMessage"] = "You must specify an Id.";
             return RedirectToAction("Index", "Chores");
         }
+
+        protected ActionResult InvalidGroup()
+        {
+            TempData["FailureMessage"] = "You do not have permission to view or edit this item.";
+            return RedirectToAction("Index", "Chores");
+        }
+
+        protected bool IsGroupObject(int objectGroupId)
+        {
+            if (objectGroupId == User.Identity.GetGroupId())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
