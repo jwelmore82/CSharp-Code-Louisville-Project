@@ -54,7 +54,7 @@ namespace RotatingChores.Controllers
                 
                 model.UpdateChore(context, chore);                
                 ValidateAssignTo(chore);
-                if (ModelState.IsValid)
+                if (ModelState.IsValid && IsGroupObject(chore.GroupId))
                 {
                     context.SaveChanges();
                     TempData["Message"] = "Chore has been updated!";

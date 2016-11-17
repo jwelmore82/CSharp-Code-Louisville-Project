@@ -35,19 +35,10 @@ namespace RotatingChores.Controllers
 
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                NullIdEncountered();
-            }
-            using (var context = new RotatingChoresContext())
-            {
-                var doer = GetDoerById(id, context);
-                var userGroup = GetUserGroup(context);
-                var doerModel = ChoreDoerModel.ConvertFromDoer(doer);
-                doerModel.AddChoresList(doer, userGroup);
-                return View(doerModel);
-            }
+            return ViewDoerById(id);
         }
+
+
 
         public ActionResult Add()
         {
@@ -81,21 +72,7 @@ namespace RotatingChores.Controllers
 
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                NullIdEncountered();
-            }
-            using (var context = new RotatingChoresContext())
-            {
-                var doer = GetDoerById(id, context);
-                if (doer != null)
-                {
-                    var doerModel = ChoreDoerModel.ConvertFromDoer(doer);
-                    return View(doerModel);
-                }
-                
-            }
-            return RedirectToAction("Index");
+            return ViewDoerById(id);
         }
 
         [HttpPost]
@@ -104,20 +81,80 @@ namespace RotatingChores.Controllers
             using (var context = new RotatingChoresContext())
             {
                 var doer = doerModel.GetRepresentedDoer(context);
-                var group = GetUserGroup(context);
-                doerModel.AddChoresList(doer, group);
-                ValidateChores(doerModel);
-                if (ModelState.IsValid)
+                if (doer != null)
                 {
-                    doerModel.UpdateDoer(doer);
-                    context.SaveChanges();
-                    TempData["Message"] = "Chore doer profile has been updated!";
-                    return RedirectToAction("Index");
+                    var group = GetUserGroup(context);
+                    doerModel.AddChoresList(doer, group);
+                    ValidateChores(doerModel);
+                    if (ModelState.IsValid && IsGroupObject(doer.GroupId))
+                    {
+                        doerModel.UpdateDoer(doer);
+                        context.SaveChanges();
+                        TempData["Message"] = "Chore doer profile has been updated!";
+                        return RedirectToAction("Index");
+                    }
+                    return View(doerModel);
                 }
+                return DoerNotFound();
             }
-            return View(doerModel);
+            
         }
 
+        public ActionResult Delete(int? id)
+        {
+            return ViewDoerById(id);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public ActionResult DeletePost(int? id)
+        {
+            using (var context = new RotatingChoresContext())
+            {
+                var doer = GetDoerById(id, context);
+                if (doer != null)
+                {
+                    if (IsGroupObject(doer.GroupId))
+                    {
+                        context.ChoreDoers.Remove(doer);
+                        context.SaveChanges();
+                        TempData["Message"] = "Chore doer successfully deleted!";
+                    }
+                    return InvalidGroup();
+                }
+                return DoerNotFound();
+            }
+        }
+
+        //Methods for this controller
+        //************************************************************
+
+        //Returns a view with ChoreDoerModel if all checks pass
+        private ActionResult ViewDoerById(int? id)
+        {
+            //Check for Id
+            if (id == null)
+            {
+                NullIdEncountered();
+            }
+            using (var context = new RotatingChoresContext())
+            {
+                var doer = GetDoerById(id, context);
+                //Check for Doer in the database
+                if (doer != null)
+                {
+                    //Check that ChoreDoer is part of user's group
+                    if (IsGroupObject(doer.GroupId))
+                    {
+                        var userGroup = GetUserGroup(context);
+                        var doerModel = ChoreDoerModel.ConvertFromDoer(doer);
+                        doerModel.AddChoresList(doer, userGroup);
+                        return View(doerModel);
+                    }
+                    return InvalidGroup();
+                }
+                return DoerNotFound();
+            }
+        }
         private static ChoreDoer GetDoerById(int? id, RotatingChoresContext context)
         {
             if (id == null)
@@ -140,6 +177,12 @@ namespace RotatingChores.Controllers
             {
                 ModelState.AddModelError("MaxDifficulty", "This user has chores assigned above this difficulty. Reassign chores or raise Max Difficulty");
             }
+        }
+
+        private ActionResult DoerNotFound()
+        {
+            TempData["FailureMessage"] = "The requested chore could not be found.";
+            return RedirectToAction("Index");
         }
     }
 }
