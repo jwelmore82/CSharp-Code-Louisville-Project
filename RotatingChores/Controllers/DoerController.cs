@@ -27,8 +27,10 @@ namespace RotatingChores.Controllers
                         doerModel.AddChoresList(doer, group);
                         modelList.Add(doerModel);
                     }
+                    return View(modelList);
                 }
-                return View(modelList);
+                TempData["Message"] = "No group members. Add one now!";
+                return RedirectToAction("Add");
             }
             
         }
@@ -67,7 +69,7 @@ namespace RotatingChores.Controllers
                     return View(model);
                 }
             }
-            return RedirectToAction("Index", "Chores");
+            return RedirectToAction("Index");
         }
 
         public ActionResult Edit(int? id)
