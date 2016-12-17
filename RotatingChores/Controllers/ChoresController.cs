@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using RotatingChores.Extensions;
-using System.Net;
 
 namespace RotatingChores.Controllers
 {

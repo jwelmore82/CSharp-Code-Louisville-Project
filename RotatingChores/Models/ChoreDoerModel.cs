@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
-using RotatingChoresData;
-using System;
+﻿using RotatingChoresData;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
 
 namespace RotatingChores.Models
 {
